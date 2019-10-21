@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/nsiegmundt/CFB_notifications/issues"
   },
-  "homepage": "https://github.com/nsiegmundt/CFB_notifications#readme"
+  "homepage": "https://github.com/nsiegmundt/CFB_notifications#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
 }
