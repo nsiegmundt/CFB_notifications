@@ -75,15 +75,20 @@ function getRankedMatchups(events){
 
 function getTeamGameInfo(events, teamName){
     let gameFound;
+    let currentShortestLength = 1000;
 
     for(var i=0; i < events.length; i++){
         let game = events[i];
         let team1 = game.competitions[0].competitors[0];
         let team2 = game.competitions[0].competitors[1];
 
-        if(team1.team.displayName.toLowerCase().includes(teamName.toLowerCase()) || team2.team.displayName.toLowerCase().includes(teamName.toLowerCase()) ){
+        if(team1.team.displayName.toLowerCase().includes(teamName.toLowerCase()) && team1.team.displayName.length < currentShortestLength){
             gameFound = [constructGameInfo(game, team1, team2)];
-            break;
+            currentShortestLength = team1.team.displayName.length;
+        }
+        else if(team2.team.displayName.toLowerCase().includes(teamName.toLowerCase()) && team2.team.displayName.length < currentShortestLength){
+            gameFound = [constructGameInfo(game, team1, team2)];
+            currentShortestLength = team2.team.displayName.length; 
         }
     }
 
@@ -91,8 +96,11 @@ function getTeamGameInfo(events, teamName){
 }
 
 function constructGameInfo(game, team1, team2){
-    let team1Title = `${team1.curatedRank.current == 99 ? "" : team1.curatedRank.current} ${team1.team.abbreviation}`;
-    let team2Title = `${team2.curatedRank.current == 99 ? "" : team2.curatedRank.current} ${team2.team.abbreviation}`;
+    let team1Rank = team1.curatedRank.current == 99 ? "" : team1.curatedRank.current + " ";
+    let team2Rank = team2.curatedRank.current == 99 ? "" : team2.curatedRank.current + " ";
+
+    let team1Title = `${team1Rank}${team1.team.abbreviation}`;
+    let team2Title = `${team2Rank}${team2.team.abbreviation}`;
     
     let gameTitle = `${team1Title} - ${team2Title}`;
     let gameTime = (new Date(game.competitions[0].date)).toLocaleString().replace(/(.*)\D\d+/, '$1');
