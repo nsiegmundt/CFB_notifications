@@ -20,15 +20,23 @@ app.post('/', (req, res) => {
             let teamName = textMessage.split("#")[1];
             messageText = getTeamGameInfo(response.events, teamName);
         }
-        else{
+        else if(textMessage.toLowerCase() == "ranked"){
             messageText = getRankedMatchups(response.events);
+        }
+        else{
+            res.end();
         }
 
         let rankedMessage = "";
 
         if (messageText){
             messageText.forEach(matchup => {
-                rankedMessage += `${matchup.matchup}\n\nWhere: ${matchup.location}\nWhen: ${matchup.time}\nWatch: ${matchup.channel}\nOdds: ${matchup.spread}\n\n`;
+                rankedMessage += `${matchup.matchup}\n\n`;
+                if (matchup.score){
+                    rankedMessage += `Score: ${matchup.score}\nTime: ${matchup.timeLeft}\n`;
+                }
+
+                rankedMessage +=`Where: ${matchup.location}\nWhen: ${matchup.time}\nWatch: ${matchup.channel}\nOdds: ${matchup.spread}\n\n`
             });
         }
         else {
@@ -108,10 +116,18 @@ function constructGameInfo(game, team1, team2){
     let gameObject = {
         matchup: gameTitle,
         time: gameTime,
-        location: game.competitions[0].venue.fullName,
+        location: team1.team.abbreviation,
         channel: game.competitions[0].broadcasts[0].names[0],
-        spread: game.competitions[0].odds[0].details
+        spread: game.competitions[0].odds ? game.competitions[0].odds[0].details : "N/A"
     };
+
+    if (game.status.type.description != "Scheduled"){
+        let score = `${team1.team.abbreviation} ${team1.score} - ${team2.team.abbreviation} ${team2.score}`;
+        gameObject.score = score;
+
+        let timeLeft = `${game.status.type.shortDetail}`;
+        gameObject.timeLeft = timeLeft;
+    }
 
     return gameObject;
 }
