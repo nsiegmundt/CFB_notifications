@@ -25,6 +25,7 @@ app.post('/', (req, res) => {
         }
         else{
             res.end();
+            return;
         }
 
         let rankedMessage = "";

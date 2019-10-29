@@ -1,10 +1,11 @@
 const fetch = require('node-fetch');
 const config = require('./config.json');
 
-const accountSid = 'ACfc8943cee2eced96a00b82f83ef02ad3';
-const authToken = '611cee8d8a5ac636d59478994544276e';
+const accountSid = '';
+const authToken = '';
 const client = require('twilio')(accountSid, authToken);
 const notifiedGames = [];
+const notifiedGamesTrippleOT = [];
 const phoneNumbers = ["+15137022441", "+15133003349"];
 
 fetch(config.cfb_endpoint)
@@ -20,13 +21,17 @@ fetch(config.cfb_endpoint)
             let team2 = game.competitions[0].competitors[1];
             let matchup = constructOTGameInfo(game, team1, team2);
 
+            gamesMessage += `\n\nWho: ${matchup.matchup}\nScore: ${matchup.score}\nTime: ${matchup.timeLeft}\nWatch: ${matchup.channel}`;
+
             if(!notifiedGames.includes(matchup.matchup)){
-                gamesMessage += `\n\nWho: ${matchup.matchup}\nScore: ${matchup.score}\nTime: ${matchup.timeLeft}\nWatch: ${matchup.channel}`;
                 notifiedGames.push(matchup.matchup);
                 gamesFound = true;
             }
-
-            console.log(gamesMessage)
+            // If the game was already notified, but the game is in the 3rd overtime or more and hasn't been notified a second time
+            else if (notifiedGames.includes(matchup.matchup) && game.status.period > 6 && !notifiedGamesTrippleOT.includes(matchup.matchup)){
+                notifiedGamesTrippleOT.push(matchup.matchup);
+                gamesFound = true;
+            }
         }
     });
 
