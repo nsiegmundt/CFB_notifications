@@ -18,7 +18,7 @@
   "homepage": "https://github.com/nsiegmundt/CFB_notifications#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "node-fetch": "^2.6.0",
     "twilio": "^3.36.0"
   }
